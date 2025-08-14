@@ -113,8 +113,8 @@ def import_data():
                 task = Task(
                     stage=item.get('階段', ''),
                     milestone=item.get('里程碑', ''),
-                    start_date=item.get('開始日期', ''),
-                    end_date=item.get('結束日期', ''),
+                    start_date=item.get('開始日', ''),  # 修正欄位名稱
+                    end_date=item.get('結束日', ''),    # 修正欄位名稱
                     content=item.get('內容說明', ''),
                     holiday_impact=item.get('假期影響', ''),
                     dependencies=item.get('相依關係', ''),
