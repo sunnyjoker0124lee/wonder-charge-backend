@@ -8,7 +8,7 @@ from flask_cors import CORS
 from src.database import db
 from src.routes.task import task_bp
 
-app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
+app = Flask(__name__, static_folder=os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static'))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
 
 # 啟用CORS以支援跨域請求
