@@ -65,6 +65,26 @@ def update_task(task_id):
         task.dependencies = data.get("dependencies", task.dependencies)
         task.responsible = data.get("responsible", task.responsible)
         task.risks = data.get("risks", task.risks)
+        task.completed = data.get("completed", task.completed)
+        
+        # 保存更新
+        updated_task = task.save()
+        return jsonify(updated_task.to_dict())
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@task_bp.route("/tasks/<int:task_id>/toggle-complete", methods=["PUT"])
+def toggle_task_complete(task_id):
+    """切換任務完成狀態"""
+    try:
+        # 獲取現有任務
+        task = Task.get_by_id(task_id)
+        if not task:
+            return jsonify({"error": "Task not found"}), 404
+        
+        # 切換完成狀態
+        task.completed = not task.completed
         
         # 保存更新
         updated_task = task.save()
@@ -83,6 +103,43 @@ def delete_task(task_id):
             return jsonify({"message": "Task deleted successfully"}), 200
         else:
             return jsonify({"error": "Task not found"}), 404
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@task_bp.route("/tasks/batch-delete", methods=["DELETE"])
+def batch_delete_tasks():
+    """批量刪除任務"""
+    try:
+        data = request.json
+        task_ids = data.get("taskIds", [])
+        
+        if not task_ids:
+            return jsonify({"error": "No task IDs provided"}), 400
+        
+        deleted_count = 0
+        errors = []
+        
+        for task_id in task_ids:
+            try:
+                success = Task.delete_by_id(task_id)
+                if success:
+                    deleted_count += 1
+                else:
+                    errors.append(f"Task {task_id} not found")
+            except Exception as e:
+                errors.append(f"Error deleting task {task_id}: {str(e)}")
+        
+        result = {
+            "message": f"Successfully deleted {deleted_count} tasks",
+            "deleted_count": deleted_count,
+            "total_requested": len(task_ids)
+        }
+        
+        if errors:
+            result["errors"] = errors
+        
+        return jsonify(result), 200
             
     except Exception as e:
         return jsonify({"error": str(e)}), 500
