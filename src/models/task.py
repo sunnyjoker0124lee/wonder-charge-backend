@@ -5,7 +5,7 @@ class Task:
     def __init__(self, id=None, stage=None, milestone=None, start_date=None, 
                  end_date=None, content=None, holiday_impact=None, 
                  dependencies=None, responsible=None, risks=None,
-                 created_at=None, updated_at=None):
+                 completed=None, created_at=None, updated_at=None):
         self.id = id
         self.stage = stage
         self.milestone = milestone
@@ -16,6 +16,7 @@ class Task:
         self.dependencies = dependencies
         self.responsible = responsible
         self.risks = risks
+        self.completed = completed
         self.created_at = created_at
         self.updated_at = updated_at
     
@@ -32,6 +33,7 @@ class Task:
             'dependencies': self.dependencies,
             'responsible': self.responsible,
             'risks': self.risks,
+            'completed': self.completed,
             'created_at': self.created_at.isoformat() if isinstance(self.created_at, datetime) else self.created_at,
             'updated_at': self.updated_at.isoformat() if isinstance(self.updated_at, datetime) else self.updated_at
         }
@@ -50,6 +52,7 @@ class Task:
             dependencies=data.get('dependencies'),
             responsible=data.get('responsible'),
             risks=data.get('risks'),
+            completed=data.get('completed'),
             created_at=data.get('created_at'),
             updated_at=data.get('updated_at')
         )
@@ -83,23 +86,23 @@ class Task:
                     UPDATE tasks 
                     SET stage = ?, milestone = ?, start_date = ?, end_date = ?,
                         content = ?, holiday_impact = ?, dependencies = ?,
-                        responsible = ?, risks = ?, updated_at = CURRENT_TIMESTAMP
+                        responsible = ?, risks = ?, completed = ?, updated_at = CURRENT_TIMESTAMP
                     WHERE id = ?
                 '''
                 params = (self.stage, self.milestone, self.start_date, self.end_date,
                          self.content, self.holiday_impact, self.dependencies,
-                         self.responsible, self.risks, self.id)
+                         self.responsible, self.risks, self.completed, self.id)
             else:
                 query = '''
                     UPDATE tasks 
                     SET stage = %s, milestone = %s, start_date = %s, end_date = %s,
                         content = %s, holiday_impact = %s, dependencies = %s,
-                        responsible = %s, risks = %s, updated_at = CURRENT_TIMESTAMP
+                        responsible = %s, risks = %s, completed = %s, updated_at = CURRENT_TIMESTAMP
                     WHERE id = %s
                 '''
                 params = (self.stage, self.milestone, self.start_date, self.end_date,
                          self.content, self.holiday_impact, self.dependencies,
-                         self.responsible, self.risks, self.id)
+                         self.responsible, self.risks, self.completed, self.id)
             
             db.execute_query(query, params)
             return self
@@ -108,21 +111,21 @@ class Task:
             if db.use_sqlite:
                 query = '''
                     INSERT INTO tasks (stage, milestone, start_date, end_date, content,
-                                     holiday_impact, dependencies, responsible, risks)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                     holiday_impact, dependencies, responsible, risks, completed)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 '''
                 params = (self.stage, self.milestone, self.start_date, self.end_date,
                          self.content, self.holiday_impact, self.dependencies,
-                         self.responsible, self.risks)
+                         self.responsible, self.risks, self.completed)
             else:
                 query = '''
                     INSERT INTO tasks (stage, milestone, start_date, end_date, content,
-                                     holiday_impact, dependencies, responsible, risks)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                     holiday_impact, dependencies, responsible, risks, completed)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 '''
                 params = (self.stage, self.milestone, self.start_date, self.end_date,
                          self.content, self.holiday_impact, self.dependencies,
-                         self.responsible, self.risks)
+                         self.responsible, self.risks, self.completed)
             
             result = db.insert_and_return(query, params)
             if result:
