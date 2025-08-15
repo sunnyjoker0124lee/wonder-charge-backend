@@ -33,7 +33,7 @@ class Task:
             'dependencies': self.dependencies,
             'responsible': self.responsible,
             'risks': self.risks,
-            'completed': self.completed,
+            'isCompleted': self.completed,  # 返回前端期望的 isCompleted 字段
             'created_at': self.created_at.isoformat() if isinstance(self.created_at, datetime) else self.created_at,
             'updated_at': self.updated_at.isoformat() if isinstance(self.updated_at, datetime) else self.updated_at
         }

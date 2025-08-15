@@ -65,7 +65,11 @@ def update_task(task_id):
         task.dependencies = data.get("dependencies", task.dependencies)
         task.responsible = data.get("responsible", task.responsible)
         task.risks = data.get("risks", task.risks)
-        task.completed = data.get("completed", task.completed)
+        # 處理完成狀態字段 - 支持 isCompleted 和 completed
+        if "isCompleted" in data:
+            task.completed = data["isCompleted"]
+        elif "completed" in data:
+            task.completed = data["completed"]
         
         # 保存更新
         updated_task = task.save()
